@@ -2,7 +2,7 @@ name: ios-touch-test
 on: [push, workflow_dispatch]
 jobs:
   sim:
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Run the simulator harness
