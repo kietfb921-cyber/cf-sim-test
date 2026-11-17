@@ -4,6 +4,11 @@
 + (BOOL)isMenuShowing;
 + (void)showChange:(BOOL)on;
 @end
+@interface MenuLoad : NSObject
++ (instancetype)createInstance;
+- (void)showMenu:(id)sender;
+- (void)initTapGes;
+@end
 
 static UIWindow *g_win;
 static UIView *g_game;
@@ -55,9 +60,11 @@ static UIView *hitAt(CGPoint p) { return [g_win hitTest:p withEvent:nil]; }
         PASS([im isMenuShowing] == NO, "menu flag starts closed");
         PASS(hitAt(CGPointMake(100, 100)) == g_game, "touch reaches game view while menu closed");
     } else if (idx == 1) {
-        logline(@"-- step 1: open menu");
-        [im showChange:YES];
-        PASS([im isMenuShowing] == YES, "menu flag now open");
+        logline(@"-- step 1: framework opens the menu through showMenu: (tests diag.m's hook)");
+        id inst = [NSClassFromString(@"MenuLoad") createInstance];
+        PASS(inst != nil, "MenuLoad instance created");
+        [inst showMenu:nil];
+        PASS([im isMenuShowing] == YES, "diag.m hook turned the menu flag on");
     } else if (idx == 2) {
         logline(@"-- step 2: menu open");
         PASS(hitAt(CGPointMake(100, 100)) != nil, "some view receives the touch with the menu open");
@@ -67,8 +74,10 @@ static UIView *hitAt(CGPoint p) { return [g_win hitTest:p withEvent:nil]; }
         }
         PASS(found, "menu view is in the hierarchy");
     } else {
-        logline(@"-- step 3: close menu");
-        [im showChange:NO];
+        logline(@"-- step 3: close menu through hidemenuBtn (tests diag.m's hook)");
+        id inst = [NSClassFromString(@"MenuLoad") createInstance];
+        if ([inst respondsToSelector:NSSelectorFromString(@"hidemenuBtn")]) [inst performSelector:NSSelectorFromString(@"hidemenuBtn")];
+        else [im showChange:NO];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             PASS(hitAt(CGPointMake(100, 100)) == g_game, "touch reaches game view again after closing the menu");
             PASS([im isMenuShowing] == NO, "menu flag back to closed");

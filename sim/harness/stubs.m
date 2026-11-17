@@ -20,6 +20,7 @@ static MenuLoad *s_inst = nil;
 - (void)initTapGes { NSLog(@"[stub] initTapGes"); }
 - (UIView *)GetImGuiView { return nil; }   /* forces diag.m to build its own view */
 - (void)showMenu:(id)sender { NSLog(@"[stub] showMenu"); }
+- (void)hidemenuBtn { NSLog(@"[stub] hidemenuBtn"); }
 @end
 
 @interface OBF_SK92E1B48 : NSObject
