@@ -1,0 +1,17 @@
+name: ios-touch-test
+on: [push, workflow_dispatch]
+jobs:
+  sim:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run the simulator harness
+        run: cd sim && ./build_and_test.sh
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harness-logs
+          path: |
+            **/harness.log
+            **/cfdiag*.log
